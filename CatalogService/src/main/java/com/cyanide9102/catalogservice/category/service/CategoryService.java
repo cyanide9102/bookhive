@@ -1,7 +1,7 @@
 package com.cyanide9102.catalogservice.category.service;
 
-import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
+import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 
 import java.util.List;
 import java.util.UUID;
