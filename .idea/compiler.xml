@@ -8,12 +8,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="discovery-service" />
+        <module name="gateway-service" />
       </profile>
       <profile name="Annotation profile for CatalogService" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
+          <entry name="/home/dany/.m2/repository/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+          <entry name="/home/dany/.m2/repository/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
           <entry name="/home/dany/.m2/repository/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
           <entry name="/home/dany/.m2/repository/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
         </processorPath>
@@ -25,6 +28,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="catalog-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
+      <module name="gateway-service" options="-parameters" />
     </option>
   </component>
 </project>

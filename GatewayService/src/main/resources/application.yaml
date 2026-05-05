@@ -1,27 +1,16 @@
 spring:
   application:
-    name: catalog-service
+    name: gateway-service
 
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:catalog_db
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
-      path: /h2
-
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    open-in-view: false
-    hibernate:
-      ddl-auto: update
-
-  sql:
-    init:
-      mode: always
+  cloud:
+    gateway:
+      routes:
+        - id: catalog-service-route
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/api/v1/categories/**, /api/v1/books/**
+          filters:
+            - StripPrefix=0
 
 eureka:
   client:
@@ -38,5 +27,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
+jwt:
+  secret: 1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=
 server:
-  port: 8081
+  port: 8080
