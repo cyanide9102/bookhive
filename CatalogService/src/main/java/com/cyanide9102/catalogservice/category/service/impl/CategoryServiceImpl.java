@@ -2,9 +2,9 @@ package com.cyanide9102.catalogservice.category.service.impl;
 
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
-import com.cyanide9102.catalogservice.category.entity.Category;
-import com.cyanide9102.catalogservice.category.mapper.CategoryMapper;
-import com.cyanide9102.catalogservice.category.repository.CategoryRepository;
+import com.cyanide9102.catalogservice.category.Category;
+import com.cyanide9102.catalogservice.category.CategoryMapper;
+import com.cyanide9102.catalogservice.category.CategoryRepository;
 import com.cyanide9102.catalogservice.category.service.CategoryService;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;

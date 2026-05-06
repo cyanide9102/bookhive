@@ -1,4 +1,4 @@
-package com.cyanide9102.catalogservice.category.controller;
+package com.cyanide9102.catalogservice.category;
 
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;

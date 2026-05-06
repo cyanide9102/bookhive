@@ -1,4 +1,4 @@
-package com.cyanide9102.catalogservice.book.controller;
+package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;

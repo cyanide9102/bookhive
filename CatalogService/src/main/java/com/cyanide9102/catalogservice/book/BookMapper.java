@@ -1,9 +1,8 @@
-package com.cyanide9102.catalogservice.book.mapper;
+package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
-import com.cyanide9102.catalogservice.book.entity.Book;
-import com.cyanide9102.catalogservice.category.entity.Category;
+import com.cyanide9102.catalogservice.category.Category;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

@@ -1,6 +1,6 @@
-package com.cyanide9102.catalogservice.book.entity;
+package com.cyanide9102.catalogservice.book;
 
-import com.cyanide9102.catalogservice.category.entity.Category;
+import com.cyanide9102.catalogservice.category.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Check;
@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)

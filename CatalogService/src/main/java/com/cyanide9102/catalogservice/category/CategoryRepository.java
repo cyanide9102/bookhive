@@ -1,6 +1,5 @@
-package com.cyanide9102.catalogservice.category.repository;
+package com.cyanide9102.catalogservice.category;
 
-import com.cyanide9102.catalogservice.category.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

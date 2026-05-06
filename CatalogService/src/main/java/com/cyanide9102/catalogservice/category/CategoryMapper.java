@@ -1,8 +1,7 @@
-package com.cyanide9102.catalogservice.category.mapper;
+package com.cyanide9102.catalogservice.category;
 
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
-import com.cyanide9102.catalogservice.category.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

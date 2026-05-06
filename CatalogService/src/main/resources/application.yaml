@@ -39,4 +39,4 @@ eureka:
     lease-expiration-duration-in-seconds: 10
 
 server:
-  port: 8081
+  port: 5001
