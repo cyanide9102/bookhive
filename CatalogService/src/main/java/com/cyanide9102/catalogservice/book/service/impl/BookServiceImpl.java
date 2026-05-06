@@ -8,6 +8,7 @@ import com.cyanide9102.catalogservice.book.dto.BookResponse;
 import com.cyanide9102.catalogservice.book.service.BookService;
 import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
+import com.cyanide9102.catalogservice.common.SecurityUtils;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,23 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+
     private final CategoryRepository categoryRepository;
+
+    private final SecurityUtils securityUtils;
 
     @Transactional
     @Override
-    public BookResponse createBook(BookRequest request) {
+    public BookResponse createBook(BookRequest request, String userId, List<String> userRoles) {
+
+        securityUtils.guardAgainstNonAdmin(userRoles);
 
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
         Book book = bookMapper.toEntity(request, category);
+        book.setCreatedBy(userId);
+        book.setUpdatedBy(userId);
+
         book = bookRepository.save(book);
 
         return bookMapper.fromEntity(book);
@@ -71,12 +80,15 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public BookResponse updateBook(UUID id, BookRequest request) {
+    public BookResponse updateBook(UUID id, BookRequest request, String userId, List<String> userRoles) {
 
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
         Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found!"));
+
         bookMapper.updateEntity(book, request, category);
+        book.setUpdatedBy(userId);
+
         book = bookRepository.save(book);
 
         return bookMapper.fromEntity(book);
@@ -84,7 +96,9 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public void deleteBook(UUID id) {
+    public void deleteBook(UUID id, String userId, List<String> userRoles) {
+
+        securityUtils.guardAgainstNonAdmin(userRoles);
 
         Optional<Book> book = bookRepository.findById(id);
         book.ifPresent(bookRepository::delete);

@@ -1,13 +1,12 @@
 package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.catalogservice.category.Category;
+import com.cyanide9102.catalogservice.common.EntityBase;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,11 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "books")
 @Check(constraints = "stock_quantity >= 0")
-public class Book {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Book extends EntityBase {
 
     @Column(nullable = false)
     private String isbn;

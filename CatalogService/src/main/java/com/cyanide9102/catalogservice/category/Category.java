@@ -1,9 +1,10 @@
 package com.cyanide9102.catalogservice.category;
 
-import jakarta.persistence.*;
+import com.cyanide9102.catalogservice.common.EntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,11 +13,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "categories")
-public class Category {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Category extends EntityBase {
 
     @Column(nullable = false)
     private String name;

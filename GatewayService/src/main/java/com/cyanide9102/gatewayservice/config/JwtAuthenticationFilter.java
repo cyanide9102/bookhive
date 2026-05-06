@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -47,7 +48,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             }
 
             Claims claims = jwtUtil.getClaims(token);
-            ServerHttpRequest mutatedRequest = request.mutate().header("X-User-Id", claims.getSubject()).header("X-User-Role", claims.get("role", String.class)).build();
+            String roles = String.join(",", getRoles(claims));
+            ServerHttpRequest mutatedRequest = request.mutate().header("X-User-Id", claims.getSubject()).header("X-User-Roles", roles).build();
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
         } catch (Exception e) {
@@ -55,4 +57,14 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             return exchange.getResponse().setComplete();
         }
     }
+
+    private List<String> getRoles(Claims claims) {
+        Object roles = claims.get("roles");
+        if (roles instanceof List<?>) {
+            return ((List<?>) roles).stream().map(Object::toString).toList();
+        }
+
+        return Collections.emptyList();
+    }
+
 }

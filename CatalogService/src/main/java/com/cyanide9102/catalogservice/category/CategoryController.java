@@ -20,9 +20,9 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse createCategory(@Valid @RequestBody CategoryRequest request) {
+    public CategoryResponse createCategory(@Valid @RequestBody CategoryRequest request, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
 
-        return categoryService.createCategory(request);
+        return categoryService.createCategory(request, userId, userRoles);
     }
 
     @GetMapping
@@ -38,15 +38,15 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public CategoryResponse updateCategory(@PathVariable UUID id, @Valid @RequestBody CategoryRequest request) {
+    public CategoryResponse updateCategory(@PathVariable UUID id, @Valid @RequestBody CategoryRequest request, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
 
-        return categoryService.updateCategory(id, request);
+        return categoryService.updateCategory(id, request, userId, userRoles);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable UUID id) {
+    public void deleteCategory(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
 
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategory(id, userId, userRoles);
     }
 }
