@@ -15,7 +15,7 @@ spring:
         - id: catalog-service-route
           uri: lb://CATALOG-SERVICE
           predicates:
-            - Path=/api/v1/categories/**,/api/v1/books/**
+            - Path=/api/v1/categories/**, /api/v1/books/**
           filters:
             - StripPrefix=0
 
@@ -25,17 +25,17 @@ eureka:
       enabled: true
 
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL:http://localhost:8761/eureka/}
 
   instance:
-    hostname: localhost
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    prefer-ip-address: false
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:false}
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
 jwt:
-  secret: 1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=
+  secret: ${JWT_SECRET:1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}

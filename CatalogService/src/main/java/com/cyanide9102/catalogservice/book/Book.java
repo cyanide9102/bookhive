@@ -4,6 +4,7 @@ import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.common.EntityBase;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -12,7 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "books")
 @Check(constraints = "stock_quantity >= 0")

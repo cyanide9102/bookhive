@@ -2,11 +2,14 @@ spring:
   application:
     name: discovery-service
 eureka:
+  instance:
+    hostname: discovery-service
+  server:
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 1000
   client:
     register-with-eureka: false
     fetch-registry: false
 
 server:
   port: 8761
-  enable-self-preservation: false
-  eviction-interval-timer-in-ms: 1000

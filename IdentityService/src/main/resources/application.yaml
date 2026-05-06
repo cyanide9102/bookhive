@@ -3,18 +3,18 @@ spring:
     name: identity-service
 
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:identity_db
-    username: sa
-    password:
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:identity_db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
 
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE_ENABLED:true}
       path: /h2
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: ${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
     defer-datasource-initialization: true
     open-in-view: false
     hibernate:
@@ -30,18 +30,18 @@ eureka:
       enabled: true
 
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL:http://localhost:8761/eureka/}
 
   instance:
-    hostname: localhost
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    prefer-ip-address: false
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:false}
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
 jwt:
-  secret: 1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=
-  access-token-expiration: 900000 # 15 minutes
+  secret: ${JWT_SECRET:1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000} # 15 minutes
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}

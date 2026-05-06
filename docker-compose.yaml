@@ -1,0 +1,64 @@
+services:
+  postgres-db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./infrastructure/postgres-init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  discovery-service:
+    build: ./DiscoveryService
+    ports:
+      - "8761:8761"
+
+  identity-service:
+    build: ./IdentityService
+    depends_on:
+      - postgres-db
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=${DB_URL_IDENTITY}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=${DB_DRIVER}
+      - SPRING_JPA_DATABASE_PLATFORM=${DB_PLATFORM}
+      - EUREKA_CLIENT_SERVICE_URL=${EUREKA_URL}
+      - EUREKA_INSTANCE_HOSTNAME=${EUREKA_HOSTNAME_IDENTITY}
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=${EUREKA_PREFER_IP}
+      - H2_CONSOLE_ENABLED=${H2_ENABLED}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION}
+
+  catalog-service:
+    build: ./CatalogService
+    depends_on:
+      - postgres-db
+      - discovery-service
+    environment:
+      - SPRING_DATASOURCE_URL=${DB_URL_CATALOG}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=${DB_DRIVER}
+      - SPRING_JPA_DATABASE_PLATFORM=${DB_PLATFORM}
+      - EUREKA_CLIENT_SERVICE_URL=${EUREKA_URL}
+      - EUREKA_INSTANCE_HOSTNAME=${EUREKA_HOSTNAME_CATALOG}
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=${EUREKA_PREFER_IP}
+      - H2_CONSOLE_ENABLED=${H2_ENABLED}
+
+  gateway-service:
+    build: ./GatewayService
+    depends_on:
+      - discovery-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL=${EUREKA_URL}
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=${EUREKA_PREFER_IP}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
