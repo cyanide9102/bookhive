@@ -33,7 +33,7 @@ public class Book {
     @Column(name = "stock_quantity", nullable = false)
     private Short stockQuantity = 0;
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Category category;
