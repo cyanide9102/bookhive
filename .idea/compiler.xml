@@ -22,6 +22,16 @@
         </processorPath>
         <module name="catalog-service" />
       </profile>
+      <profile name="Annotation profile for IdentityService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="/home/dany/.m2/repository/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+          <entry name="/home/dany/.m2/repository/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+        </processorPath>
+        <module name="identity-service" />
+      </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
@@ -29,6 +39,7 @@
       <module name="catalog-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
+      <module name="identity-service" options="-parameters" />
     </option>
   </component>
 </project>
