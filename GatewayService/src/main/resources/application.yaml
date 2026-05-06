@@ -5,10 +5,17 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: identity-service-route
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=0
+
         - id: catalog-service-route
           uri: lb://CATALOG-SERVICE
           predicates:
-            - Path=/api/v1/categories/**, /api/v1/books/**
+            - Path=/api/v1/categories/**,/api/v1/books/**
           filters:
             - StripPrefix=0
 
@@ -29,5 +36,6 @@ eureka:
 
 jwt:
   secret: 1zuATy0nfdvrFa3Zmkc+HX9HFA7ARqZn6yy3qejeluE=
+
 server:
   port: 8080
