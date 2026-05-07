@@ -16,10 +16,10 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     Optional<Book> findByIsbn(String isbn);
 
     @Modifying
-    @Query("UPDATE Book b SET b.stock_quantity = b.stock_quantity - :quantity WHERE b.id = :id AND b.stock_quantity >= :quantity")
+    @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity - :quantity WHERE b.id = :id AND b.stockQuantity >= :quantity")
     int reserveStock(@Param("id") UUID id, @Param("quantity") int quantity);
 
     @Modifying
-    @Query("UPDATE Book b SET b.stock_quantity = b.stock_quantity + :quantity WHERE b.id = :id")
+    @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity + :quantity WHERE b.id = :id")
     int releaseStock(@Param("id") UUID id, @Param("quantity") int quantity);
 }
