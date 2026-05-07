@@ -22,9 +22,9 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookResponse createBook(@Valid @RequestBody BookRequest request, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
+    public BookResponse createBook(@Valid @RequestBody BookRequest request) {
 
-        return bookService.createBook(request, userId, userRoles);
+        return bookService.createBook(request);
     }
 
     @GetMapping()
@@ -50,15 +50,27 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public BookResponse updateBook(@PathVariable UUID id, @Valid @RequestBody BookRequest request, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
+    public BookResponse updateBook(@PathVariable UUID id, @Valid @RequestBody BookRequest request) {
 
-        return bookService.updateBook(id, request, userId, userRoles);
+        return bookService.updateBook(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") List<String> userRoles) {
+    public void deleteBook(@PathVariable UUID id) {
 
-        bookService.deleteBook(id, userId, userRoles);
+        bookService.deleteBook(id);
+    }
+
+    @PostMapping("/{id}/reserve")
+    public void reserve(@PathVariable UUID id, @RequestParam int quantity) {
+
+        bookService.reserveStock(id, quantity);
+    }
+
+    @PostMapping("/{id}/release")
+    public void release(@PathVariable UUID id, @RequestParam int quantity) {
+
+        bookService.releaseStock(id, quantity);
     }
 }

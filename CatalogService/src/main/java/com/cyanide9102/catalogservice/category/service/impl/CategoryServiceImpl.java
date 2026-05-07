@@ -6,8 +6,9 @@ import com.cyanide9102.catalogservice.category.CategoryRepository;
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 import com.cyanide9102.catalogservice.category.service.CategoryService;
-import com.cyanide9102.catalogservice.common.SecurityUtils;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.catalogservice.common.exception.UnauthorizedException;
+import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,21 +21,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
+    private final RequestContext requestContext;
 
-    private final SecurityUtils securityUtils;
+    private final CategoryRepository categoryRepository;
+
+    private final CategoryMapper categoryMapper;
 
     @Transactional
     @Override
     public CategoryResponse createCategory(CategoryRequest request, String userId, List<String> userRoles) {
 
-        securityUtils.guardAgainstNonAdmin(userRoles);
+        if (!requestContext.isAdmin()) {
+            throw new UnauthorizedException("Administrator access required!");
+        }
 
         Category category = categoryMapper.toEntity(request);
-        category.setCreatedBy(userId);
-        category.setUpdatedBy(userId);
-
         category = categoryRepository.save(category);
 
         return categoryMapper.fromEntity(category);
@@ -60,13 +61,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse updateCategory(UUID id, CategoryRequest request, String userId, List<String> userRoles) {
 
-        securityUtils.guardAgainstNonAdmin(userRoles);
+        if (!requestContext.isAdmin()) {
+            throw new UnauthorizedException("Administrator access required!");
+        }
 
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found!"));
 
         categoryMapper.updateEntity(category, request);
-        category.setUpdatedBy(userId);
-
         category = categoryRepository.save(category);
 
         return categoryMapper.fromEntity(category);
@@ -76,7 +77,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(UUID id, String userId, List<String> userRoles) {
 
-        securityUtils.guardAgainstNonAdmin(userRoles);
+        if (!requestContext.isAdmin()) {
+            throw new UnauthorizedException("Administrator access required!");
+        }
 
         Optional<Category> category = categoryRepository.findById(id);
         category.ifPresent(categoryRepository::delete);

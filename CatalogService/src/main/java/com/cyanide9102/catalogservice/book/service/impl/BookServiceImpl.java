@@ -1,15 +1,15 @@
 package com.cyanide9102.catalogservice.book.service.impl;
 
-import com.cyanide9102.catalogservice.book.Book;
-import com.cyanide9102.catalogservice.book.BookMapper;
-import com.cyanide9102.catalogservice.book.BookRepository;
+import com.cyanide9102.catalogservice.book.*;
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
 import com.cyanide9102.catalogservice.book.service.BookService;
 import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
-import com.cyanide9102.catalogservice.common.SecurityUtils;
+import com.cyanide9102.catalogservice.common.exception.InsufficientStockException;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.catalogservice.common.exception.UnauthorizedException;
+import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,25 +22,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final BookRepository bookRepository;
-    private final BookMapper bookMapper;
+    private final RequestContext requestContext;
 
+    private final BookRepository bookRepository;
+    private final StockTransactionRepository stockTransactionRepository;
     private final CategoryRepository categoryRepository;
 
-    private final SecurityUtils securityUtils;
+    private final BookMapper bookMapper;
 
     @Transactional
     @Override
-    public BookResponse createBook(BookRequest request, String userId, List<String> userRoles) {
+    public BookResponse createBook(BookRequest request) {
 
-        securityUtils.guardAgainstNonAdmin(userRoles);
+        if (!requestContext.isAdmin()) {
+            throw new UnauthorizedException("Administrator access required!");
+        }
 
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
         Book book = bookMapper.toEntity(request, category);
-        book.setCreatedBy(userId);
-        book.setUpdatedBy(userId);
-
         book = bookRepository.save(book);
 
         return bookMapper.fromEntity(book);
@@ -80,15 +80,13 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public BookResponse updateBook(UUID id, BookRequest request, String userId, List<String> userRoles) {
+    public BookResponse updateBook(UUID id, BookRequest request) {
 
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
         Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found!"));
 
         bookMapper.updateEntity(book, request, category);
-        book.setUpdatedBy(userId);
-
         book = bookRepository.save(book);
 
         return bookMapper.fromEntity(book);
@@ -96,11 +94,38 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public void deleteBook(UUID id, String userId, List<String> userRoles) {
+    public void deleteBook(UUID id) {
 
-        securityUtils.guardAgainstNonAdmin(userRoles);
+        if (!requestContext.isAdmin()) {
+            throw new UnauthorizedException("Administrator access required!");
+        }
 
         Optional<Book> book = bookRepository.findById(id);
         book.ifPresent(bookRepository::delete);
+    }
+
+    @Transactional
+    @Override
+    public void reserveStock(UUID id, int quantity) {
+
+        int rowsUpdated = bookRepository.reserveStock(id, quantity);
+        if (rowsUpdated == 0) {
+            throw new InsufficientStockException("Not enough stock available for book ID: " + id);
+        }
+
+        StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(-quantity).type(StockTransactionType.RESERVE).build();
+        stockTransactionRepository.save(log);
+    }
+
+    @Override
+    public void releaseStock(UUID id, int quantity) {
+
+        int rowsUpdated = bookRepository.releaseStock(id, quantity);
+        if (rowsUpdated == 0) {
+            throw new ResourceNotFoundException("Book with id " + id + " not found!");
+        }
+
+        StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(+quantity).type(StockTransactionType.RELEASE).build();
+        stockTransactionRepository.save(log);
     }
 }

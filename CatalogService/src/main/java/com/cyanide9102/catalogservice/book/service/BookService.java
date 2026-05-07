@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface BookService {
 
-    BookResponse createBook(BookRequest request, String userId, List<String> userRoles);
+    BookResponse createBook(BookRequest request);
 
     List<BookResponse> getBooks();
 
@@ -18,7 +18,11 @@ public interface BookService {
 
     BookResponse getBookByIsbn(String isbn);
 
-    BookResponse updateBook(UUID id, BookRequest request, String userId, List<String> userRoles);
+    BookResponse updateBook(UUID id, BookRequest request);
 
-    void deleteBook(UUID id, String userId, List<String> userRoles);
+    void deleteBook(UUID id);
+
+    void reserveStock(UUID id, int quantity);
+
+    void releaseStock(UUID id, int quantity);
 }
