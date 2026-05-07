@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryResponse createCategory(CategoryRequest request, String userId, List<String> userRoles) {
+    public CategoryResponse createCategory(CategoryRequest request) {
 
         if (!requestContext.isAdmin()) {
             throw new UnauthorizedException("Administrator access required!");
@@ -59,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryResponse updateCategory(UUID id, CategoryRequest request, String userId, List<String> userRoles) {
+    public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
 
         if (!requestContext.isAdmin()) {
             throw new UnauthorizedException("Administrator access required!");
@@ -75,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public void deleteCategory(UUID id, String userId, List<String> userRoles) {
+    public void deleteCategory(UUID id) {
 
         if (!requestContext.isAdmin()) {
             throw new UnauthorizedException("Administrator access required!");
