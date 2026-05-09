@@ -9,6 +9,8 @@ import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @SuperBuilder
 @Entity
 @Table(name = "books")
-@Check(constraints = "stock_quantity >= 0")
+@Check(constraints = "stock_quantity >= 0 AND price > 0")
 public class Book extends EntityBase {
 
     @Column(nullable = false)
@@ -28,6 +30,9 @@ public class Book extends EntityBase {
     @Builder.Default
     @Column(name = "stock_quantity", nullable = false)
     private Short stockQuantity = 0;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

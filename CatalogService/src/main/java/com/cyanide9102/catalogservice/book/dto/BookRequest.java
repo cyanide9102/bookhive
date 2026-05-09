@@ -2,12 +2,14 @@ package com.cyanide9102.catalogservice.book.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -25,6 +27,10 @@ public class BookRequest {
     @NotNull
     @PositiveOrZero
     private Short stockQuantity;
+
+    @NotNull
+    @Positive
+    private BigDecimal price;
 
     private UUID categoryId;
 }
