@@ -1,6 +1,8 @@
 package com.cyanide9102.catalogservice.common;
 
+import com.cyanide9102.catalogservice.common.exception.InsufficientStockException;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.catalogservice.common.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,9 +15,23 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InsufficientStockException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleInsufficientStockException(InsufficientStockException e) {
+
+        return Map.of("error", e.getMessage());
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(ResourceNotFoundException e) {
+
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleUnauthorizedException(UnauthorizedException e) {
 
         return Map.of("error", e.getMessage());
     }
@@ -26,9 +42,7 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
 
-        e.getBindingResult()
-                .getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return errors;
     }

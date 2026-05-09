@@ -1,5 +1,6 @@
 package com.cyanide9102.orderservice.order.service.impl;
 
+import com.cyanide9102.orderservice.annotation.RequiresLogin;
 import com.cyanide9102.orderservice.client.CatalogClient;
 import com.cyanide9102.orderservice.client.dto.BookResponse;
 import com.cyanide9102.orderservice.common.exception.InsufficientStockException;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@RequiresLogin
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {

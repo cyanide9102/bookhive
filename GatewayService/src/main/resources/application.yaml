@@ -19,6 +19,13 @@ spring:
           filters:
             - StripPrefix=0
 
+        - id: order-service-route
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - StripPrefix=0
+
 eureka:
   client:
     healthcheck:

@@ -16,9 +16,4 @@ public class RequestContext {
 
         return UserContext.getUserRoles();
     }
-
-    public boolean isAdmin() {
-
-        return roles() != null && roles().contains("ROLE_ADMIN");
-    }
 }

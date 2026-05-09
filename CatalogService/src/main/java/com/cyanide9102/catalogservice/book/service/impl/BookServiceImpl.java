@@ -1,5 +1,7 @@
 package com.cyanide9102.catalogservice.book.service.impl;
 
+import com.cyanide9102.catalogservice.annotation.RequiresAdmin;
+import com.cyanide9102.catalogservice.annotation.RequiresLogin;
 import com.cyanide9102.catalogservice.book.*;
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
@@ -8,7 +10,6 @@ import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
 import com.cyanide9102.catalogservice.common.exception.InsufficientStockException;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
-import com.cyanide9102.catalogservice.common.exception.UnauthorizedException;
 import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,10 @@ public class BookServiceImpl implements BookService {
 
     private final BookMapper bookMapper;
 
+    @RequiresAdmin
     @Transactional
     @Override
     public BookResponse createBook(BookRequest request) {
-
-        if (!requestContext.isAdmin()) {
-            throw new UnauthorizedException("Administrator access required!");
-        }
 
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
@@ -78,6 +76,7 @@ public class BookServiceImpl implements BookService {
         return bookMapper.fromEntity(book);
     }
 
+    @RequiresAdmin
     @Transactional
     @Override
     public BookResponse updateBook(UUID id, BookRequest request) {
@@ -92,18 +91,16 @@ public class BookServiceImpl implements BookService {
         return bookMapper.fromEntity(book);
     }
 
+    @RequiresAdmin
     @Transactional
     @Override
     public void deleteBook(UUID id) {
-
-        if (!requestContext.isAdmin()) {
-            throw new UnauthorizedException("Administrator access required!");
-        }
 
         Optional<Book> book = bookRepository.findById(id);
         book.ifPresent(bookRepository::delete);
     }
 
+    @RequiresLogin
     @Transactional
     @Override
     public void reserveStock(UUID id, int quantity) {
@@ -117,6 +114,8 @@ public class BookServiceImpl implements BookService {
         stockTransactionRepository.save(log);
     }
 
+    @RequiresLogin
+    @Transactional
     @Override
     public void releaseStock(UUID id, int quantity) {
 

@@ -2,6 +2,7 @@ package com.cyanide9102.orderservice.common;
 
 import com.cyanide9102.orderservice.common.exception.InsufficientStockException;
 import com.cyanide9102.orderservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.orderservice.common.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(ResourceNotFoundException e) {
+
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleUnauthorizedException(UnauthorizedException e) {
 
         return Map.of("error", e.getMessage());
     }
