@@ -31,7 +31,7 @@ public class OrderController {
     }
 
     @GetMapping()
-    public List<OrderResponse> getOrdersByUserId(@RequestParam UUID userId) {
+    public List<OrderResponse> getOrdersByUserId() {
 
         return orderService.getOrdersByUser();
     }
