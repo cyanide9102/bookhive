@@ -38,6 +38,21 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 15000ms
         permittedNumberOfCallsInHalfOpenState: 3
+        slowCallDurationThreshold: 3s
+        slowCallRateThreshold: 80
+
+resilience4j.retry:
+  configs:
+    default:
+      consume-attributes: true # ensures that the retry doesn't happen if the circuit is already OPEN
+
+  instances:
+    catalog-service:
+      maxAttempts: 3
+      waitDuration: 500ms
+      retryExceptions:
+        - java.io.IOException
+        - feign.RetryableException
 
 eureka:
   client:

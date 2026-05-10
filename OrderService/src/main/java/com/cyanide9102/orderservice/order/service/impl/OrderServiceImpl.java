@@ -13,6 +13,7 @@ import com.cyanide9102.orderservice.order.OrderStatus;
 import com.cyanide9102.orderservice.order.dto.OrderRequest;
 import com.cyanide9102.orderservice.order.dto.OrderResponse;
 import com.cyanide9102.orderservice.order.service.OrderService;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse createOrder(OrderRequest request) {
 
-        BookResponse book = catalogClient.getBookById(request.getBookId());
+        BookResponse book = getBookWithRetry(request.getBookId());
 
         if (book.getStockQuantity() < request.getQuantity()) {
             throw new InsufficientStockException("Not enough stock was available at the time of your request!", book.getId().toString(), request.getQuantity(), book.getStockQuantity());
@@ -68,6 +69,12 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> orders = orderRepository.findByCreatedBy(userId);
         return orders.stream().map(orderMapper::fromEntity).toList();
+    }
+
+    // Surgical Retry: Marked public so the Spring Proxy can intercept it
+    @Retry(name = "catalog-service")
+    public BookResponse getBookWithRetry(UUID bookId) {
+        return catalogClient.getBookById(bookId);
     }
 
     private Order getOrder(UUID id) {
