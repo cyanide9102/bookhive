@@ -19,16 +19,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InsufficientStockException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleInsufficientStockException(InsufficientStockException e) {
+    public Map<String, Object> handleInsufficientStockException(InsufficientStockException e) {
 
-        return Map.of("error", e.getMessage());
+        return Map.of("error", e.getMessage(), "bookId", e.getBookId(), "requested", e.getRequested(), "available", e.getAvailable());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(ResourceNotFoundException e) {
 
-        return Map.of("error", e.getMessage());
+        return Map.of("error", e.getMessage(), "resourceType", e.getResourceType(), "resourceId", e.getResourceId());
     }
 
     @ExceptionHandler(UnauthorizedException.class)

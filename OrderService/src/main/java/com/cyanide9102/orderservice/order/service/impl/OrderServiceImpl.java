@@ -40,15 +40,15 @@ public class OrderServiceImpl implements OrderService {
         BookResponse book = catalogClient.getBookById(request.getBookId());
 
         if (book.getStockQuantity() < request.getQuantity()) {
-            throw new InsufficientStockException("Not enough books in the warehouse!");
+            throw new InsufficientStockException("Not enough stock was available at the time of your request!", book.getId().toString(), request.getQuantity(), book.getStockQuantity());
         }
-
-        catalogClient.reserveStock(book.getId(), request.getQuantity());
 
         BigDecimal total = book.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
 
         Order order = Order.builder().bookId(book.getId()).bookTitle(book.getTitle()).quantity(request.getQuantity()).totalPrice(total).status(OrderStatus.CREATED).build();
         order = orderRepository.save(order);
+
+        catalogClient.reserveStock(book.getId(), request.getQuantity());
 
         return orderMapper.fromEntity(order);
     }
@@ -57,8 +57,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse getOrderById(UUID id) {
 
-        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
-
+        Order order = getOrder(id);
         return orderMapper.fromEntity(order);
     }
 
@@ -69,5 +68,10 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> orders = orderRepository.findByCreatedBy(userId);
         return orders.stream().map(orderMapper::fromEntity).toList();
+    }
+
+    private Order getOrder(UUID id) {
+
+        return orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order not found!", Order.class.getSimpleName(), id.toString()));
     }
 }

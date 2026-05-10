@@ -10,7 +10,6 @@ import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
 import com.cyanide9102.catalogservice.common.exception.InsufficientStockException;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
-import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +22,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final RequestContext requestContext;
-
     private final BookRepository bookRepository;
     private final StockTransactionRepository stockTransactionRepository;
     private final CategoryRepository categoryRepository;
@@ -36,7 +33,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse createBook(BookRequest request) {
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
+        Category category = getCategory(request.getCategoryId());
 
         Book book = bookMapper.toEntity(request, category);
         book = bookRepository.save(book);
@@ -64,7 +61,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getBookById(UUID id) {
 
-        Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found!"));
+        Book book = getBook(id);
         return bookMapper.fromEntity(book);
     }
 
@@ -72,7 +69,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getBookByIsbn(String isbn) {
 
-        Book book = bookRepository.findByIsbn(isbn).orElseThrow(() -> new ResourceNotFoundException("Book with id " + isbn + " not found!"));
+        Book book = getBook(isbn);
         return bookMapper.fromEntity(book);
     }
 
@@ -81,9 +78,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse updateBook(UUID id, BookRequest request) {
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
+        Category category = getCategory(request.getCategoryId());
 
-        Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found!"));
+        Book book = getBook(id);
 
         bookMapper.updateEntity(book, request, category);
         book = bookRepository.save(book);
@@ -107,7 +104,8 @@ public class BookServiceImpl implements BookService {
 
         int rowsUpdated = bookRepository.reserveStock(id, quantity);
         if (rowsUpdated == 0) {
-            throw new InsufficientStockException("Not enough stock available for book ID: " + id);
+            Book book = getBook(id);
+            throw new InsufficientStockException("Not enough stock was available at the time of your request!", book.getId().toString(), quantity, book.getStockQuantity());
         }
 
         StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(-quantity).type(StockTransactionType.RESERVE).build();
@@ -120,11 +118,24 @@ public class BookServiceImpl implements BookService {
     public void releaseStock(UUID id, int quantity) {
 
         int rowsUpdated = bookRepository.releaseStock(id, quantity);
-        if (rowsUpdated == 0) {
-            throw new ResourceNotFoundException("Book with id " + id + " not found!");
+        if (rowsUpdated > 0) {
+            StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(+quantity).type(StockTransactionType.RELEASE).build();
+            stockTransactionRepository.save(log);
         }
+    }
 
-        StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(+quantity).type(StockTransactionType.RELEASE).build();
-        stockTransactionRepository.save(log);
+    private Category getCategory(UUID id) {
+
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found!", Category.class.getSimpleName(), id.toString()));
+    }
+
+    private Book getBook(UUID id) {
+
+        return bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found!", Book.class.getSimpleName(), id.toString()));
+    }
+
+    private Book getBook(String isbn) {
+
+        return bookRepository.findByIsbn(isbn).orElseThrow(() -> new ResourceNotFoundException("Book not found!", Book.class.getSimpleName(), isbn));
     }
 }

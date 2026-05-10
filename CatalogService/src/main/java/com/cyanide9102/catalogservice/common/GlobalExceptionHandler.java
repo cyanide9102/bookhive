@@ -19,16 +19,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InsufficientStockException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleInsufficientStockException(InsufficientStockException e) {
+    public Map<String, Object> handleInsufficientStockException(InsufficientStockException e) {
 
-        return Map.of("error", e.getMessage());
+        return Map.of("error", e.getMessage(), "bookId", e.getBookId(), "requested", e.getRequested(), "available", e.getAvailable());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(ResourceNotFoundException e) {
 
-        return Map.of("error", e.getMessage());
+        return Map.of("error", e.getMessage(), "resourceType", e.getResourceType(), "resourceId", e.getResourceId());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -40,14 +40,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(MethodArgumentNotValidException e) {
+    public Map<String, Object> handleValidationException(MethodArgumentNotValidException e) {
+        Map<String, Object> response = new HashMap<>();
 
-        Map<String, String> errors = new HashMap<>();
+        response.put("error", "Validation Failed");
 
-        e.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        Map<String, String> fieldErrors = new HashMap<>();
+        e.getBindingResult().getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
 
-        return errors;
+        response.put("fields", fieldErrors);
+
+        return response;
     }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

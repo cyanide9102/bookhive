@@ -1,9 +1,16 @@
 package com.cyanide9102.orderservice.common.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+import lombok.Getter;
 
-    public ResourceNotFoundException(String message) {
+@Getter
+public class ResourceNotFoundException extends RuntimeException {
+    private final String resourceType;
+    private final String resourceId;
+
+    public ResourceNotFoundException(String message, String resourceType, String resourceId) {
 
         super(message);
+        this.resourceType = resourceType;
+        this.resourceId = resourceId;
     }
 }

@@ -8,7 +8,6 @@ import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 import com.cyanide9102.catalogservice.category.service.CategoryService;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
-import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +19,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-
-    private final RequestContext requestContext;
 
     private final CategoryRepository categoryRepository;
 
@@ -50,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(UUID id) {
 
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found!"));
+        Category category = getCategory(id);
         return categoryMapper.fromEntity(category);
     }
 
@@ -59,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
 
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found!"));
+        Category category = getCategory(id);
 
         categoryMapper.updateEntity(category, request);
         category = categoryRepository.save(category);
@@ -74,5 +71,10 @@ public class CategoryServiceImpl implements CategoryService {
 
         Optional<Category> category = categoryRepository.findById(id);
         category.ifPresent(categoryRepository::delete);
+    }
+
+    private Category getCategory(UUID id) {
+
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found!", Category.class.getSimpleName(), id.toString()));
     }
 }
