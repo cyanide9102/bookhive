@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.cyanide9102</groupId>
+    <artifactId>bookhive</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>DiscoveryService</module>
+        <module>GatewayService</module>
+        <module>IdentityService</module>
+        <module>CatalogService</module>
+        <module>OrderService</module>
+    </modules>
+</project>
