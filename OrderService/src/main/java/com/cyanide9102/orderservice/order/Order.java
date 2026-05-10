@@ -22,18 +22,19 @@ import java.util.UUID;
 @Check(constraints = "quantity > 0")
 public class Order extends EntityBase {
 
-    @Column(nullable = false)
+    @Column(name = "book_id", nullable = false)
     private UUID bookId;
+
+    @Column(name = "book_title", nullable = false)
+    private String bookTitle;
 
     @Column(nullable = false)
     private Short quantity;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
-
-    private String userId;
 }

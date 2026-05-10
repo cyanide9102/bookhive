@@ -18,8 +18,10 @@ public class OrderResponse {
 
     private UUID id;
     private UUID bookId;
+    private String bookTitle;
     private Short quantity;
     private BigDecimal totalPrice;
     private OrderStatus status;
+    private String createdBy;
     private Instant createdAt;
 }

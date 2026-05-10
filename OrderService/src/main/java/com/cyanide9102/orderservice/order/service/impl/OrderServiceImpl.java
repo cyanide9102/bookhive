@@ -37,19 +37,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse createOrder(OrderRequest request) {
 
-        String userId = requestContext.userId();
-
         BookResponse book = catalogClient.getBookById(request.getBookId());
 
         if (book.getStockQuantity() < request.getQuantity()) {
             throw new InsufficientStockException("Not enough books in the warehouse!");
         }
 
-        catalogClient.reserveStock(request.getBookId(), request.getQuantity());
+        catalogClient.reserveStock(book.getId(), request.getQuantity());
 
         BigDecimal total = book.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
 
-        Order order = Order.builder().bookId(request.getBookId()).quantity(request.getQuantity()).totalPrice(total).status(OrderStatus.CREATED).userId(userId).build();
+        Order order = Order.builder().bookId(book.getId()).bookTitle(book.getTitle()).quantity(request.getQuantity()).totalPrice(total).status(OrderStatus.CREATED).build();
         order = orderRepository.save(order);
 
         return orderMapper.fromEntity(order);
@@ -69,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 
         String userId = requestContext.userId();
 
-        List<Order> orders = orderRepository.findByUserId(userId);
+        List<Order> orders = orderRepository.findByCreatedBy(userId);
         return orders.stream().map(orderMapper::fromEntity).toList();
     }
 }
