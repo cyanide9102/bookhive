@@ -1,11 +1,11 @@
 package com.cyanide9102.identityservice.auth.service.impl;
 
+import com.cyanide9102.common.exception.AuthBusinessException;
+import com.cyanide9102.common.exception.UnauthorizedException;
 import com.cyanide9102.identityservice.auth.dto.AuthResponse;
 import com.cyanide9102.identityservice.auth.dto.LoginRequest;
 import com.cyanide9102.identityservice.auth.dto.RegisterRequest;
 import com.cyanide9102.identityservice.auth.service.AuthService;
-import com.cyanide9102.identityservice.common.exception.AuthBusinessException;
-import com.cyanide9102.identityservice.common.exception.UnauthorizedException;
 import com.cyanide9102.identityservice.role.Role;
 import com.cyanide9102.identityservice.role.RoleRepository;
 import com.cyanide9102.identityservice.security.JwtService;

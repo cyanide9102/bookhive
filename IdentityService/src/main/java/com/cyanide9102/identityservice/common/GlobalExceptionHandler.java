@@ -1,7 +1,7 @@
 package com.cyanide9102.identityservice.common;
 
-import com.cyanide9102.identityservice.common.exception.AuthBusinessException;
-import com.cyanide9102.identityservice.common.exception.UnauthorizedException;
+import com.cyanide9102.common.exception.AuthBusinessException;
+import com.cyanide9102.common.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

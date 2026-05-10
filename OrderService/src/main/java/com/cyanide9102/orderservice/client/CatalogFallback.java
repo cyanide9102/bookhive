@@ -1,7 +1,7 @@
 package com.cyanide9102.orderservice.client;
 
+import com.cyanide9102.common.exception.ServiceUnavailableException;
 import com.cyanide9102.orderservice.client.dto.BookResponse;
-import com.cyanide9102.orderservice.common.exception.ServiceUnavailableException;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

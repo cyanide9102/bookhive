@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>Common</module>
         <module>DiscoveryService</module>
         <module>GatewayService</module>
         <module>IdentityService</module>

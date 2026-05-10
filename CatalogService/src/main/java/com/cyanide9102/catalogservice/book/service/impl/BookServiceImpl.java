@@ -1,15 +1,15 @@
 package com.cyanide9102.catalogservice.book.service.impl;
 
-import com.cyanide9102.catalogservice.annotation.RequiresAdmin;
-import com.cyanide9102.catalogservice.annotation.RequiresLogin;
 import com.cyanide9102.catalogservice.book.*;
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
 import com.cyanide9102.catalogservice.book.service.BookService;
 import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
-import com.cyanide9102.catalogservice.common.exception.InsufficientStockException;
-import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.common.annotation.RequiresAdmin;
+import com.cyanide9102.common.annotation.RequiresLogin;
+import com.cyanide9102.common.exception.InsufficientStockException;
+import com.cyanide9102.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

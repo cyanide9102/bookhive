@@ -1,6 +1,6 @@
 package com.cyanide9102.orderservice.client.config;
 
-import com.cyanide9102.orderservice.context.UserContext;
+import com.cyanide9102.common.context.UserContext;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
 package com.cyanide9102.orderservice.common;
 
-import com.cyanide9102.orderservice.common.exception.InsufficientStockException;
-import com.cyanide9102.orderservice.common.exception.ResourceNotFoundException;
-import com.cyanide9102.orderservice.common.exception.UnauthorizedException;
+import com.cyanide9102.common.exception.InsufficientStockException;
+import com.cyanide9102.common.exception.ResourceNotFoundException;
+import com.cyanide9102.common.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

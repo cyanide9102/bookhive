@@ -1,7 +1,7 @@
 package com.cyanide9102.orderservice.client.config;
 
-import com.cyanide9102.orderservice.common.exception.InsufficientStockException;
-import com.cyanide9102.orderservice.common.exception.ResourceNotFoundException;
+import com.cyanide9102.common.exception.InsufficientStockException;
+import com.cyanide9102.common.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;

@@ -1,6 +1,6 @@
 package com.cyanide9102.catalogservice.category;
 
-import com.cyanide9102.catalogservice.common.EntityBase;
+import com.cyanide9102.common.entity.EntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

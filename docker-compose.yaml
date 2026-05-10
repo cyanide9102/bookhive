@@ -11,12 +11,20 @@ services:
       - "5432:5432"
 
   discovery-service:
-    build: ./DiscoveryService
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+      args:
+        SERVICE_NAME: DiscoveryService
     ports:
       - "8761:8761"
 
   identity-service:
-    build: ./IdentityService
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: IdentityService
     depends_on:
       - postgres-db
       - discovery-service
@@ -34,7 +42,11 @@ services:
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION}
 
   catalog-service:
-    build: ./CatalogService
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: CatalogService
     depends_on:
       - postgres-db
       - discovery-service
@@ -50,7 +62,11 @@ services:
       - H2_CONSOLE_ENABLED=${H2_ENABLED}
 
   order-service:
-    build: ./OrderService
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: OrderService
     depends_on:
       - postgres-db
       - discovery-service
@@ -66,7 +82,11 @@ services:
       - H2_CONSOLE_ENABLED=${H2_ENABLED}
 
   gateway-service:
-    build: ./GatewayService
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+      args:
+        SERVICE_NAME: GatewayService
     depends_on:
       - discovery-service
     environment:

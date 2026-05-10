@@ -1,7 +1,7 @@
 package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.catalogservice.category.Category;
-import com.cyanide9102.catalogservice.common.EntityBase;
+import com.cyanide9102.common.entity.EntityBase;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

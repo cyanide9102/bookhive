@@ -4,27 +4,29 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        - id: identity-service-route
-          uri: lb://IDENTITY-SERVICE
-          predicates:
-            - Path=/api/v1/auth/**
-          filters:
-            - StripPrefix=0
+      server:
+        webflux:
+          routes:
+            - id: identity-service-route
+              uri: lb://IDENTITY-SERVICE
+              predicates:
+                - Path=/api/v1/auth/**
+              filters:
+                - StripPrefix=0
 
-        - id: catalog-service-route
-          uri: lb://CATALOG-SERVICE
-          predicates:
-            - Path=/api/v1/categories/**, /api/v1/books/**
-          filters:
-            - StripPrefix=0
+            - id: catalog-service-route
+              uri: lb://CATALOG-SERVICE
+              predicates:
+                - Path=/api/v1/categories/**, /api/v1/books/**
+              filters:
+                - StripPrefix=0
 
-        - id: order-service-route
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/api/v1/orders/**
-          filters:
-            - StripPrefix=0
+            - id: order-service-route
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/api/v1/orders/**
+              filters:
+                - StripPrefix=0
 
 eureka:
   client:

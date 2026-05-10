@@ -1,6 +1,6 @@
 package com.cyanide9102.orderservice.order;
 
-import com.cyanide9102.orderservice.common.EntityBase;
+import com.cyanide9102.common.entity.EntityBase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
