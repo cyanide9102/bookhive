@@ -1,5 +1,6 @@
 package com.cyanide9102.catalogservice.category.service.impl;
 
+import com.cyanide9102.catalogservice.annotation.RequiresAdmin;
 import com.cyanide9102.catalogservice.category.Category;
 import com.cyanide9102.catalogservice.category.CategoryMapper;
 import com.cyanide9102.catalogservice.category.CategoryRepository;
@@ -7,7 +8,6 @@ import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 import com.cyanide9102.catalogservice.category.service.CategoryService;
 import com.cyanide9102.catalogservice.common.exception.ResourceNotFoundException;
-import com.cyanide9102.catalogservice.common.exception.UnauthorizedException;
 import com.cyanide9102.catalogservice.context.RequestContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,13 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryMapper categoryMapper;
 
+    @RequiresAdmin
     @Transactional
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-
-        if (!requestContext.isAdmin()) {
-            throw new UnauthorizedException("Administrator access required!");
-        }
 
         Category category = categoryMapper.toEntity(request);
         category = categoryRepository.save(category);
@@ -57,13 +54,10 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.fromEntity(category);
     }
 
+    @RequiresAdmin
     @Transactional
     @Override
     public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
-
-        if (!requestContext.isAdmin()) {
-            throw new UnauthorizedException("Administrator access required!");
-        }
 
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found!"));
 
@@ -73,13 +67,10 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.fromEntity(category);
     }
 
+    @RequiresAdmin
     @Transactional
     @Override
     public void deleteCategory(UUID id) {
-
-        if (!requestContext.isAdmin()) {
-            throw new UnauthorizedException("Administrator access required!");
-        }
 
         Optional<Category> category = categoryRepository.findById(id);
         category.ifPresent(categoryRepository::delete);
