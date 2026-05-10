@@ -32,11 +32,11 @@ spring:
 resilience4j:
   circuitbreaker:
     instances:
-      catalogService:
+      catalog-service:
         registerHealthIndicator: true
-        slidingWindowSize: 10              # Look at last 10 calls
-        failureRateThreshold: 50           # Trip if 50% fail
-        waitDurationInOpenState: 15000ms   # Wait 15s before trying again
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15000ms
         permittedNumberOfCallsInHalfOpenState: 3
 
 eureka:
