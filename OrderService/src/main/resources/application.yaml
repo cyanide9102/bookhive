@@ -24,6 +24,21 @@ spring:
     init:
       mode: always
 
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalogService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10              # Look at last 10 calls
+        failureRateThreshold: 50           # Trip if 50% fail
+        waitDurationInOpenState: 15000ms   # Wait 15s before trying again
+        permittedNumberOfCallsInHalfOpenState: 3
+
 eureka:
   client:
     healthcheck:

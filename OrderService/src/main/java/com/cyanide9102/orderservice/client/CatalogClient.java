@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name = "catalog-service")
+@FeignClient(name = "catalog-service", fallback = CatalogFallback.class)
 public interface CatalogClient {
 
     @GetMapping("/api/v1/books/{id}")
