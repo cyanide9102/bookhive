@@ -1,3 +1,4 @@
+name: bookhive
 services:
   postgres-db:
     image: postgres:15
@@ -5,15 +6,15 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./infrastructure/postgres-init:/docker-entrypoint-initdb.d
+      - ../postgres/init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   discovery-service:
     build:
-      context: .
-      dockerfile: Dockerfile.standalone
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
       args:
         SERVICE_NAME: DiscoveryService
     ports:
@@ -21,8 +22,8 @@ services:
 
   identity-service:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
       args:
         SERVICE_NAME: IdentityService
     depends_on:
@@ -43,8 +44,8 @@ services:
 
   catalog-service:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
       args:
         SERVICE_NAME: CatalogService
     depends_on:
@@ -63,8 +64,8 @@ services:
 
   order-service:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
       args:
         SERVICE_NAME: OrderService
     depends_on:
@@ -83,8 +84,8 @@ services:
 
   gateway-service:
     build:
-      context: .
-      dockerfile: Dockerfile.standalone
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
       args:
         SERVICE_NAME: GatewayService
     depends_on:

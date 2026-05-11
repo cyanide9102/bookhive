@@ -22,8 +22,8 @@
           <entry name="/home/dany/.m2/repository/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
         </processorPath>
         <module name="identity-service" />
-        <module name="order-service" />
         <module name="catalog-service" />
+        <module name="order-service" />
       </profile>
     </annotationProcessing>
   </component>

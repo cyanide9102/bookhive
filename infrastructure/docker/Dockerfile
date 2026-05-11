@@ -3,22 +3,15 @@ FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 ARG SERVICE_NAME
 
-# Copy Infrastructure
-COPY .mvn .mvn
-COPY mvnw .
+COPY . .
 RUN chmod +x mvnw
-
-# Copy the Service
-COPY ${SERVICE_NAME}/pom.xml ./pom.xml
-COPY ${SERVICE_NAME}/src ./src
-
-# Build
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -pl ${SERVICE_NAME} -am -DskipTests
 
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
+ARG SERVICE_NAME
 
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/${SERVICE_NAME}/target/*.jar app.jar
 
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

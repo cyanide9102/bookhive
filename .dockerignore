@@ -1,0 +1,12 @@
+# Ignore everything by default
+*
+
+# Allow the root Maven wrapper and main parent POM
+!pom.xml
+!.mvn/
+!mvnw
+!mvnw.cmd
+
+# Allow all module POMs and source directories (Recursive)
+!**/pom.xml
+!**/src/
