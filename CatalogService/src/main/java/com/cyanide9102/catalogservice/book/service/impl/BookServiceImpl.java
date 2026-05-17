@@ -108,7 +108,7 @@ public class BookServiceImpl implements BookService {
             throw new InsufficientStockException("Not enough stock was available at the time of your request!", book.getId().toString(), quantity, book.getStockQuantity());
         }
 
-        StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(-quantity).type(StockTransactionType.RESERVE).build();
+        StockTransaction log = StockTransaction.builder().bookId(id).quantity(-quantity).type(StockTransactionType.RESERVE).build();
         stockTransactionRepository.save(log);
     }
 
@@ -119,7 +119,7 @@ public class BookServiceImpl implements BookService {
 
         int rowsUpdated = bookRepository.releaseStock(id, quantity);
         if (rowsUpdated > 0) {
-            StockTransaction log = StockTransaction.builder().bookId(id.toString()).quantity(+quantity).type(StockTransactionType.RELEASE).build();
+            StockTransaction log = StockTransaction.builder().bookId(id).quantity(+quantity).type(StockTransactionType.RELEASE).build();
             stockTransactionRepository.save(log);
         }
     }

@@ -1,26 +1,27 @@
 package com.cyanide9102.orderservice.order;
 
-import com.cyanide9102.common.entity.EntityBase;
+import com.cyanide9102.common.context.UserContext;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import org.hibernate.annotations.Check;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @Entity
 @Table(name = "orders")
 @Check(constraints = "quantity > 0")
-public class Order extends EntityBase {
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "book_id", nullable = false)
     private UUID bookId;
@@ -37,4 +38,20 @@ public class Order extends EntityBase {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+
+        String userId = UserContext.getUserId();
+        if (userId != null) {
+            this.userId = userId;
+        }
+    }
 }
