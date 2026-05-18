@@ -24,6 +24,21 @@ spring:
     init:
       mode: always
 
+  kafka:
+    bootstrap-servers: ${KAFKA_SOURCE:localhost:9092}
+    consumer:
+      group-id: order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.cyanide9102.common.event,com.cyanide9102.common.event.*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
+
   cloud:
     openfeign:
       circuitbreaker:
@@ -40,19 +55,6 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
         slowCallDurationThreshold: 3s
         slowCallRateThreshold: 80
-
-resilience4j.retry:
-  configs:
-    default:
-      consume-attributes: true # ensures that the retry doesn't happen if the circuit is already OPEN
-
-  instances:
-    catalog-service:
-      maxAttempts: 3
-      waitDuration: 500ms
-      retryExceptions:
-        - java.io.IOException
-        - feign.RetryableException
 
 eureka:
   client:

@@ -1,20 +1,16 @@
 package com.cyanide9102.orderservice.client;
 
 import com.cyanide9102.orderservice.client.dto.BookResponse;
+import com.cyanide9102.orderservice.client.dto.InventoryAdjustmentRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.UUID;
+import java.util.List;
 
 @FeignClient(name = "catalog-service", fallback = CatalogFallback.class)
 public interface CatalogClient {
 
-    @GetMapping("/api/v1/books/{id}")
-    BookResponse getBookById(@PathVariable UUID id);
-
-    @PostMapping("/api/v1/books/{id}/reserve")
-    void reserveStock(@PathVariable UUID id, @RequestParam int quantity);
+    @PostMapping("/api/v1/books/inventory/reserve")
+    List<BookResponse> reserveStock(@RequestBody List<InventoryAdjustmentRequest> requests);
 }

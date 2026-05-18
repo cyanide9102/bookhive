@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public CategoryResponse getCategoryById(UUID id) {
+    public CategoryResponse getCategoryById(String id) {
 
         Category category = getCategory(id);
         return categoryMapper.fromEntity(category);
@@ -54,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     @RequiresAdmin
     @Transactional
     @Override
-    public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
+    public CategoryResponse updateCategory(String id, CategoryRequest request) {
 
         Category category = getCategory(id);
 
@@ -67,14 +66,14 @@ public class CategoryServiceImpl implements CategoryService {
     @RequiresAdmin
     @Transactional
     @Override
-    public void deleteCategory(UUID id) {
+    public void deleteCategory(String id) {
 
         Optional<Category> category = categoryRepository.findById(id);
         category.ifPresent(categoryRepository::delete);
     }
 
-    private Category getCategory(UUID id) {
+    private Category getCategory(String id) {
 
-        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found!", Category.class.getSimpleName(), id.toString()));
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found!", Category.class.getSimpleName(), id));
     }
 }

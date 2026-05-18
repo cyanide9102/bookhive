@@ -4,7 +4,6 @@ import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface CategoryService {
 
@@ -12,9 +11,9 @@ public interface CategoryService {
 
     List<CategoryResponse> getCategories();
 
-    CategoryResponse getCategoryById(UUID id);
+    CategoryResponse getCategoryById(String id);
 
-    CategoryResponse updateCategory(UUID id, CategoryRequest request);
+    CategoryResponse updateCategory(String id, CategoryRequest request);
 
-    void deleteCategory(UUID id);
+    void deleteCategory(String id);
 }

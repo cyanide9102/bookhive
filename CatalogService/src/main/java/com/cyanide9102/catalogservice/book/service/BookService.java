@@ -2,9 +2,9 @@ package com.cyanide9102.catalogservice.book.service;
 
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
+import com.cyanide9102.catalogservice.book.dto.InventoryAdjustmentRequest;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface BookService {
 
@@ -12,17 +12,17 @@ public interface BookService {
 
     List<BookResponse> getBooks();
 
-    List<BookResponse> getBooksByCategoryId(UUID categoryId);
+    List<BookResponse> getBooksByCategoryId(String categoryId);
 
-    BookResponse getBookById(UUID id);
+    BookResponse getBookById(String id);
 
     BookResponse getBookByIsbn(String isbn);
 
-    BookResponse updateBook(UUID id, BookRequest request);
+    BookResponse updateBook(String id, BookRequest request);
 
-    void deleteBook(UUID id);
+    void deleteBook(String id);
 
-    void reserveStock(UUID id, int quantity);
+    List<BookResponse> reserveStock(List<InventoryAdjustmentRequest> requests);
 
-    void releaseStock(UUID id, int quantity);
+    List<BookResponse> releaseStock(List<InventoryAdjustmentRequest> requests);
 }

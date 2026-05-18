@@ -1,9 +1,8 @@
 package com.cyanide9102.identityservice.role;
 
+import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,9 +14,17 @@ import java.util.UUID;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(length = 13, columnDefinition = "char(13)")
+    private String id;
 
     @Column(unique = true, nullable = false)
     private String name;
+
+    @PrePersist
+    public void prePersist() {
+
+        if (this.id == null) {
+            id = TSID.Factory.getTsid().toString();
+        }
+    }
 }

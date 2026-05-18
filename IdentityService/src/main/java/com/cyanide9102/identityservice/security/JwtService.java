@@ -35,7 +35,7 @@ public class JwtService {
         Date expiryDate = new Date(now.getTime() + expiration);
 
         JwtBuilder jwtBuilder = Jwts.builder();
-        jwtBuilder.subject(user.getId().toString());
+        jwtBuilder.subject(user.getId());
         jwtBuilder.issuedAt(now);
         jwtBuilder.expiration(expiryDate);
         jwtBuilder.claim("username", user.getUsername());

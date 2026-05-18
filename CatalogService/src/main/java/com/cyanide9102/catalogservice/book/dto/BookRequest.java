@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -32,5 +31,5 @@ public class BookRequest {
     @Positive
     private BigDecimal price;
 
-    private UUID categoryId;
+    private String categoryId;
 }

@@ -1,36 +1,28 @@
 package com.cyanide9102.orderservice.order;
 
 import com.cyanide9102.common.context.UserContext;
+import com.cyanide9102.orderservice.order.item.OrderItem;
+import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Check;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "orders")
-@Check(constraints = "quantity > 0")
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @Column(name = "book_id", nullable = false)
-    private UUID bookId;
-
-    @Column(name = "book_title", nullable = false)
-    private String bookTitle;
-
-    @Column(nullable = false)
-    private Short quantity;
+    @Column(length = 13, columnDefinition = "char(13)")
+    private String id;
 
     @Column(name = "total_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalPrice;
@@ -39,14 +31,26 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", length = 13, columnDefinition = "char(13)")
     private String userId;
+
+    @Column(name = "tracking_id", nullable = false, unique = true, length = 13, columnDefinition = "char(13)")
+    private String trackingId;
 
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
+
     @PrePersist
     public void prePersist() {
+
+        if (this.id == null) {
+            this.id = TSID.Factory.getTsid().toString();
+        }
+
         this.createdAt = Instant.now();
 
         String userId = UserContext.getUserId();

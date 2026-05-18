@@ -7,19 +7,18 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface BookRepository extends JpaRepository<Book, UUID> {
+public interface BookRepository extends JpaRepository<Book, String> {
 
-    List<Book> findByCategoryId(UUID categoryId);
+    List<Book> findByCategoryId(String categoryId);
 
     Optional<Book> findByIsbn(String isbn);
 
     @Modifying
     @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity - :quantity WHERE b.id = :id AND b.stockQuantity >= :quantity")
-    int reserveStock(@Param("id") UUID id, @Param("quantity") int quantity);
+    int reserveStock(@Param("id") String id, @Param("quantity") int quantity);
 
     @Modifying
     @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity + :quantity WHERE b.id = :id")
-    int releaseStock(@Param("id") UUID id, @Param("quantity") int quantity);
+    int releaseStock(@Param("id") String id, @Param("quantity") int quantity);
 }

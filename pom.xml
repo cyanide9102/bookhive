@@ -12,5 +12,6 @@
         <module>IdentityService</module>
         <module>CatalogService</module>
         <module>OrderService</module>
+        <module>PaymentService</module>
     </modules>
 </project>

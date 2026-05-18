@@ -2,6 +2,7 @@ package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
+import com.cyanide9102.catalogservice.book.dto.InventoryAdjustmentRequest;
 import com.cyanide9102.catalogservice.book.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,28 +10,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
 public class BookController {
 
-    private static final UUID EMPTY_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
     private final BookService bookService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookResponse createBook(@Valid @RequestBody BookRequest request) {
+    public BookResponse createBook(@RequestBody @Valid BookRequest request) {
 
         return bookService.createBook(request);
     }
 
     @GetMapping()
-    public List<BookResponse> getBooksByCategoryId(@RequestParam(required = false) UUID categoryId) {
+    public List<BookResponse> getBooks(@RequestParam(required = false) String categoryId) {
 
-        if (categoryId != null && !categoryId.equals(EMPTY_UUID)) {
+        if (categoryId != null) {
             return bookService.getBooksByCategoryId(categoryId);
         }
 
@@ -38,7 +36,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public BookResponse getBook(@PathVariable UUID id) {
+    public BookResponse getBook(@PathVariable String id) {
 
         return bookService.getBookById(id);
     }
@@ -50,27 +48,27 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public BookResponse updateBook(@PathVariable UUID id, @Valid @RequestBody BookRequest request) {
+    public BookResponse updateBook(@PathVariable String id, @RequestBody @Valid BookRequest request) {
 
         return bookService.updateBook(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable UUID id) {
+    public void deleteBook(@PathVariable String id) {
 
         bookService.deleteBook(id);
     }
 
-    @PostMapping("/{id}/reserve")
-    public void reserve(@PathVariable UUID id, @RequestParam int quantity) {
+    @PostMapping("/inventory/reserve")
+    public List<BookResponse> reserve(@RequestBody @Valid List<InventoryAdjustmentRequest> requests) {
 
-        bookService.reserveStock(id, quantity);
+        return bookService.reserveStock(requests);
     }
 
-    @PostMapping("/{id}/release")
-    public void release(@PathVariable UUID id, @RequestParam int quantity) {
+    @PostMapping("/inventory/release")
+    public List<BookResponse> release(@RequestBody @Valid List<InventoryAdjustmentRequest> requests) {
 
-        bookService.releaseStock(id, quantity);
+        return bookService.releaseStock(requests);
     }
 }

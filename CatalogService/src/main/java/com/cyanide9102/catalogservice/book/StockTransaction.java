@@ -1,11 +1,11 @@
 package com.cyanide9102.catalogservice.book;
 
 import com.cyanide9102.common.context.UserContext;
+import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,18 +17,18 @@ import java.util.UUID;
 public class StockTransaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(length = 13, columnDefinition = "char(13)")
+    private String id;
 
-    @Column(name = "book_id")
-    private UUID bookId;
+    @Column(name = "book_id", length = 13, columnDefinition = "char(13)")
+    private String bookId;
 
     private int quantity;
 
     @Enumerated(EnumType.STRING)
     private StockTransactionType type;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", length = 13, columnDefinition = "char(13)")
     private String userId;
 
     @Column(name = "created_at")
@@ -36,6 +36,11 @@ public class StockTransaction {
 
     @PrePersist
     public void prePersist() {
+
+        if (id == null) {
+            id = TSID.Factory.getTsid().toString();
+        }
+
         this.createdAt = Instant.now();
 
         String userId = UserContext.getUserId();
