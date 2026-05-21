@@ -44,6 +44,7 @@ build/
 *.class
 
 # AI Agents
+.qwen/
 QWEN.md
 
 # Optional: local env files
