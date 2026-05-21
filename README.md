@@ -1,13 +1,15 @@
 # BookHive
 
-A Java-based microservices bookstore application built with **Spring Boot 3.5.14** and **Spring Cloud**. This project implements a distributed e-commerce system with event-driven communication, JWT authentication, and Kafka-based service orchestration.
+A Java-based microservices bookstore application built with **Spring Boot 3.5.14** and **Spring Cloud**. This project
+implements a distributed e-commerce system with event-driven communication, JWT authentication, and Kafka-based service
+orchestration.
 
 ---
 
 ## Services Overview
 
 | Service          | Port | Description                                    |
-| ---------------- | ---- | ---------------------------------------------- |
+|------------------|------|------------------------------------------------|
 | DiscoveryService | 8761 | Netflix Eureka service registry                |
 | GatewayService   | 8080 | API Gateway (OAuth2 JWT authentication)        |
 | IdentityService  | 8081 | User registration, login, JWT token generation |
@@ -37,16 +39,19 @@ A Java-based microservices bookstore application built with **Spring Boot 3.5.14
 
 ### Shared Kernel
 
-The `Common` module provides shared domain classes, events, Kafka topics definitions, and security annotations used across all services. Includes packages for events, Kafka configuration, custom annotations, exceptions, and security utilities.
+The `Common` module provides shared domain classes, events, Kafka topics definitions, and security annotations used
+across all services. Includes packages for events, Kafka configuration, custom annotations, exceptions, and security
+utilities.
 
 ### Event-Driven Communication
 
-Services communicate asynchronously via Kafka topics. The Order flow triggers a payment event when an order is created, enabling decoupled payment processing.
+Services communicate asynchronously via Kafka topics. The Order flow triggers a payment event when an order is created,
+enabling decoupled payment processing.
 
 **Kafka Topics:**
 
 | Topic             | Producer       | Consumer       | Description                        |
-| ----------------- | -------------- | -------------- | ---------------------------------- |
+|-------------------|----------------|----------------|------------------------------------|
 | order-created     | OrderService   | PaymentService | Triggered when an order is created |
 | payment-completed | PaymentService | OrderService   | Triggered after successful payment |
 
@@ -86,13 +91,13 @@ docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastru
 **Build the entire monorepo (from project root):**
 
 ```bash
-mvn clean install -DskipTests
+./mvnw clean install -DskipTests
 ```
 
 **Build a specific service (from project root):**
 
 ```bash
-mvnw clean package -pl <service-name> -am -DskipTests
+./mvnw clean package -pl <service-name> -am -DskipTests
 ```
 
 ### Running Services
@@ -100,7 +105,7 @@ mvnw clean package -pl <service-name> -am -DskipTests
 **Run a specific service (from project root):**
 
 ```bash
-mvnw -pl <service-name> spring-boot:run
+./mvnw -pl <service-name> spring-boot:run
 ```
 
 ### Testing
@@ -108,13 +113,13 @@ mvnw -pl <service-name> spring-boot:run
 **Run unit tests for the entire project:**
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 **Run all tests including integration tests:**
 
 ```bash
-mvn clean test -DskipITs=false
+./mvnw clean test -DskipITs=false
 ```
 
 ---
@@ -154,7 +159,8 @@ Each service follows a consistent package structure with:
 
 ### Security & Authentication
 
-All protected endpoints require JWT authentication via the `@RequiresLogin` annotation. The GatewayService intercepts all requests, validates JWT tokens, and forwards authenticated requests to backend services.
+All protected endpoints require JWT authentication via the `@RequiresLogin` annotation. The GatewayService intercepts
+all requests, validates JWT tokens, and forwards authenticated requests to backend services.
 
 **Gateway Configuration:**
 
@@ -167,7 +173,7 @@ All protected endpoints require JWT authentication via the `@RequiresLogin` anno
 Services read configuration from Docker Compose or local `.env` files:
 
 | Variable                      | Description                       |
-| ----------------------------- | --------------------------------- |
+|-------------------------------|-----------------------------------|
 | `DB_USER`                     | Database username                 |
 | `DB_PASSWORD`                 | Database password                 |
 | `DB_URL_<SERVICE>`            | Service-specific database URL     |
@@ -182,7 +188,7 @@ Services read configuration from Docker Compose or local `.env` files:
 ## Key Files Reference
 
 | File/Directory                              | Purpose                                                       |
-| ------------------------------------------- | ------------------------------------------------------------- |
+|---------------------------------------------|---------------------------------------------------------------|
 | `pom.xml` (root)                            | Multi-module Maven parent defining all modules                |
 | `bookhive-postman.json`                     | Postman collection for API testing                            |
 | `infrastructure/docker/docker-compose.yaml` | Orchestration configuration for all services + Kafka/Postgres |
@@ -213,6 +219,8 @@ Services read configuration from Docker Compose or local `.env` files:
 
 ---
 
-> **Note:** Environment-specific configurations (`.env.dev`, database passwords) are managed externally. Refer to the infrastructure directory for setup details and security best practices.
+> **Note:** Environment-specific configurations (`.env.dev`, database passwords) are managed externally. Refer to the
+> infrastructure directory for setup details and security best practices.
 >
-> **API Documentation:** For complete API endpoint documentation with request/response examples, refer to `bookhive-postman.json`.
+> **API Documentation:** For complete API endpoint documentation with request/response examples, refer to
+`bookhive-postman.json`.
