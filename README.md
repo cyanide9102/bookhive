@@ -183,6 +183,37 @@ Services read configuration from Docker Compose or local `.env` files:
 | `JWT_ACCESS_TOKEN_EXPIRATION` | JWT token expiration time         |
 | `H2_CONSOLE_ENABLED`          | Enable H2 console (dev only)      |
 
+```env
+# Network & Service Discovery
+EUREKA_URL=http://discovery-service:8761/eureka/
+EUREKA_PREFER_IP=true
+
+# Eureka Client Specific URLs
+EUREKA_HOSTNAME_IDENTITY=identity-service
+EUREKA_HOSTNAME_CATALOG=catalog-service
+EUREKA_HOSTNAME_ORDER=order-service
+EUREKA_HOSTNAME_PAYMENT=payment-service
+
+# Database Shared Config
+DB_USER=
+DB_PASSWORD=
+DB_DRIVER=org.postgresql.Driver
+DB_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+
+# Database Specific URLs
+DB_URL_IDENTITY=jdbc:postgresql://postgres-db:5432/identity_db
+DB_URL_CATALOG=jdbc:postgresql://postgres-db:5432/catalog_db
+DB_URL_ORDER=jdbc:postgresql://postgres-db:5432/order_db
+DB_URL_PAYMENT=jdbc:postgresql://postgres-db:5432/payment_db
+
+# H2 Console
+H2_ENABLED=false
+
+# Security
+JWT_SECRET=
+JWT_ACCESS_TOKEN_EXPIRATION=900000
+```
+
 ---
 
 ## Key Files Reference
