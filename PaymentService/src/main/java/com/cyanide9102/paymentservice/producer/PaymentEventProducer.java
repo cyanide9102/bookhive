@@ -1,7 +1,7 @@
 package com.cyanide9102.paymentservice.producer;
 
 import com.cyanide9102.common.event.payment.PaymentCompletedEvent;
-import com.cyanide9102.paymentservice.config.KafkaConfig;
+import com.cyanide9102.common.kafka.KafkaTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,7 +16,7 @@ public class PaymentEventProducer {
 
     public void publishPaymentCompletedEvent(PaymentCompletedEvent event) {
 
-        log.info("Publishing PaymentCompletedEvent for Order ID: {}", event.orderId());
-        kafkaTemplate.send(KafkaConfig.PAYMENT_COMPLETED_TOPIC, event.orderId(), event);
+        log.info("Publishing PaymentCompletedEvent for Order ID: {}", event.getOrderId());
+        kafkaTemplate.send(KafkaTopics.PAYMENT_COMPLETED, event.getOrderId(), event);
     }
 }

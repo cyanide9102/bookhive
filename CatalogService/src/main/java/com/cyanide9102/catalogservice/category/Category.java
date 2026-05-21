@@ -1,6 +1,5 @@
 package com.cyanide9102.catalogservice.category;
 
-import com.cyanide9102.common.context.UserContext;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,21 +43,11 @@ public class Category {
 
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-
-        String userId = UserContext.getUserId();
-        if (userId != null) {
-            this.createdBy = userId;
-            this.updatedBy = userId;
-        }
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = Instant.now();
 
-        String userId = UserContext.getUserId();
-        if (userId != null) {
-            this.updatedBy = userId;
-        }
+        this.updatedAt = Instant.now();
     }
 }

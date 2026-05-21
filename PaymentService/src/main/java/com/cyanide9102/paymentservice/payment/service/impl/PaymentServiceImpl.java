@@ -1,18 +1,16 @@
 package com.cyanide9102.paymentservice.payment.service.impl;
 
-import com.cyanide9102.common.event.order.OrderPlacedEvent;
 import com.cyanide9102.common.event.payment.PaymentCompletedEvent;
 import com.cyanide9102.paymentservice.payment.Payment;
 import com.cyanide9102.paymentservice.payment.PaymentRepository;
 import com.cyanide9102.paymentservice.payment.PaymentStatus;
 import com.cyanide9102.paymentservice.payment.service.PaymentService;
+import com.cyanide9102.paymentservice.payment.service.ProcessPaymentCommand;
 import com.cyanide9102.paymentservice.producer.PaymentEventProducer;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -22,12 +20,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public void processOrderPayment(OrderPlacedEvent orderEvent) {
+    public void processOrderPayment(ProcessPaymentCommand command) {
 
-        Payment payment = Payment.builder().orderId(orderEvent.orderId()).userId(orderEvent.userId()).trackingId(orderEvent.trackingId()).amount(orderEvent.totalAmount()).status(PaymentStatus.COMPLETED).build();
+        Payment payment = Payment.builder().orderId(command.getOrderId()).userId(command.getUserId()).trackingId(command.getTrackingId()).amount(command.getTotalAmount()).status(PaymentStatus.COMPLETED).build();
         payment = paymentRepository.save(payment);
 
-        PaymentCompletedEvent paymentEvent = new PaymentCompletedEvent(orderEvent.trackingId(), payment.getId(), orderEvent.orderId(), orderEvent.totalAmount(), orderEvent.paymentToken(), orderEvent.userId(), null);
+        PaymentCompletedEvent paymentEvent = PaymentCompletedEvent.builder().paymentId(payment.getId()).orderId(payment.getOrderId()).userId(payment.getUserId()).trackingId(payment.getTrackingId()).totalAmount(payment.getAmount()).build();
         paymentEventProducer.publishPaymentCompletedEvent(paymentEvent);
     }
 }

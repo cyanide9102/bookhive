@@ -4,6 +4,9 @@ import com.cyanide9102.catalogservice.book.dto.BookRequest;
 import com.cyanide9102.catalogservice.book.dto.BookResponse;
 import com.cyanide9102.catalogservice.book.dto.InventoryAdjustmentRequest;
 import com.cyanide9102.catalogservice.book.service.BookService;
+import com.cyanide9102.common.annotation.RequiresAdmin;
+import com.cyanide9102.common.annotation.RequiresLogin;
+import com.cyanide9102.common.context.RequestContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +19,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
 
+    private final RequestContext requestContext;
     private final BookService bookService;
 
+    @RequiresAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse createBook(@RequestBody @Valid BookRequest request) {
 
-        return bookService.createBook(request);
+        return bookService.createBook(request, requestContext.userId());
     }
 
     @GetMapping()
@@ -47,12 +52,14 @@ public class BookController {
         return bookService.getBookByIsbn(isbn);
     }
 
+    @RequiresAdmin
     @PutMapping("/{id}")
     public BookResponse updateBook(@PathVariable String id, @RequestBody @Valid BookRequest request) {
 
-        return bookService.updateBook(id, request);
+        return bookService.updateBook(id, request, requestContext.userId());
     }
 
+    @RequiresAdmin
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable String id) {
@@ -60,15 +67,17 @@ public class BookController {
         bookService.deleteBook(id);
     }
 
+    @RequiresLogin
     @PostMapping("/inventory/reserve")
     public List<BookResponse> reserve(@RequestBody @Valid List<InventoryAdjustmentRequest> requests) {
 
-        return bookService.reserveStock(requests);
+        return bookService.reserveStock(requests, requestContext.userId());
     }
 
+    @RequiresLogin
     @PostMapping("/inventory/release")
     public List<BookResponse> release(@RequestBody @Valid List<InventoryAdjustmentRequest> requests) {
 
-        return bookService.releaseStock(requests);
+        return bookService.releaseStock(requests, requestContext.userId());
     }
 }

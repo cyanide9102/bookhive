@@ -1,6 +1,5 @@
 package com.cyanide9102.orderservice.order;
 
-import com.cyanide9102.common.context.UserContext;
 import com.cyanide9102.orderservice.order.item.OrderItem;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
@@ -52,10 +51,5 @@ public class Order {
         }
 
         this.createdAt = Instant.now();
-
-        String userId = UserContext.getUserId();
-        if (userId != null) {
-            this.userId = userId;
-        }
     }
 }

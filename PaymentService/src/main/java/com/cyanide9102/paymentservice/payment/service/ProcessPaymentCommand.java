@@ -1,4 +1,4 @@
-package com.cyanide9102.common.event.order;
+package com.cyanide9102.paymentservice.payment.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,24 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderCreatedEvent {
-
-    private String trackingId;
+public class ProcessPaymentCommand {
 
     private String orderId;
-    private BigDecimal totalAmount;
     private String userId;
-    private List<SharedEventBook> items;
+    private String trackingId;
+
+    private BigDecimal totalAmount;
 
     private String paymentToken;
-
-    @Builder.Default
-    private Instant occurredAt = Instant.now();
 }

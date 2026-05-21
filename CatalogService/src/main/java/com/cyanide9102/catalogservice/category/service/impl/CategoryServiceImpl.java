@@ -6,7 +6,6 @@ import com.cyanide9102.catalogservice.category.CategoryRepository;
 import com.cyanide9102.catalogservice.category.dto.CategoryRequest;
 import com.cyanide9102.catalogservice.category.dto.CategoryResponse;
 import com.cyanide9102.catalogservice.category.service.CategoryService;
-import com.cyanide9102.common.annotation.RequiresAdmin;
 import com.cyanide9102.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryMapper categoryMapper;
 
-    @RequiresAdmin
     @Transactional
     @Override
-    public CategoryResponse createCategory(CategoryRequest request) {
+    public CategoryResponse createCategory(CategoryRequest request, String userId) {
 
         Category category = categoryMapper.toEntity(request);
+        category.setCreatedBy(userId);
+        category.setUpdatedBy(userId);
+
         category = categoryRepository.save(category);
 
         return categoryMapper.fromEntity(category);
@@ -50,20 +51,20 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.fromEntity(category);
     }
 
-    @RequiresAdmin
     @Transactional
     @Override
-    public CategoryResponse updateCategory(String id, CategoryRequest request) {
+    public CategoryResponse updateCategory(String id, CategoryRequest request, String userId) {
 
         Category category = getCategory(id);
 
         categoryMapper.updateEntity(category, request);
+        category.setUpdatedBy(userId);
+
         category = categoryRepository.save(category);
 
         return categoryMapper.fromEntity(category);
     }
 
-    @RequiresAdmin
     @Transactional
     @Override
     public void deleteCategory(String id) {

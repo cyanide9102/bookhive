@@ -1,6 +1,5 @@
 package com.cyanide9102.paymentservice.payment;
 
-import com.cyanide9102.common.context.UserContext;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,11 +40,7 @@ public class Payment {
 
     @PrePersist
     public void prePersist() {
-        this.processedAt = Instant.now();
 
-        String userId = UserContext.getUserId();
-        if (this.userId == null && userId != null) {
-            this.userId = userId;
-        }
+        this.processedAt = Instant.now();
     }
 }

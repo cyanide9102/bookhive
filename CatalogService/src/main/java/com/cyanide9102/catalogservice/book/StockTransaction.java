@@ -1,6 +1,5 @@
 package com.cyanide9102.catalogservice.book;
 
-import com.cyanide9102.common.context.UserContext;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,10 +41,5 @@ public class StockTransaction {
         }
 
         this.createdAt = Instant.now();
-
-        String userId = UserContext.getUserId();
-        if (userId != null) {
-            this.userId = userId;
-        }
     }
 }

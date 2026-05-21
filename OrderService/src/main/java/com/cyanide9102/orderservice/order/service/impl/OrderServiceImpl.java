@@ -1,7 +1,5 @@
 package com.cyanide9102.orderservice.order.service.impl;
 
-import com.cyanide9102.common.annotation.RequiresLogin;
-import com.cyanide9102.common.context.RequestContext;
 import com.cyanide9102.common.event.order.OrderCreatedEvent;
 import com.cyanide9102.common.event.order.SharedEventBook;
 import com.cyanide9102.common.exception.ResourceNotFoundException;
@@ -31,13 +29,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiresLogin
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-
-    private final RequestContext requestContext;
 
     private final CatalogClient catalogClient;
 
@@ -48,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderResponse createOrder(OrderRequest request) {
+    public OrderResponse createOrder(OrderRequest request, String userId) {
 
         Optional<Order> existingOrder = orderRepository.findByTrackingId(request.getTrackingId());
         if (existingOrder.isPresent()) {
@@ -78,6 +73,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setTotalPrice(total);
+        order.setUserId(userId);
+
         order = orderRepository.save(order);
 
         log.info("Publishing OrderPlacedEvent for orderId={}, trackingId={}", order.getId(), order.getTrackingId());
@@ -96,9 +93,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByUser() {
+    public List<OrderResponse> getOrdersByUser(String userId) {
 
-        String userId = requestContext.userId();
 
         List<Order> orders = orderRepository.findByCreatedBy(userId);
         return orders.stream().map(orderMapper::fromEntity).toList();
