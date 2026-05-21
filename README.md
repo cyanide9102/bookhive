@@ -250,8 +250,5 @@ JWT_ACCESS_TOKEN_EXPIRATION=900000
 
 ---
 
-> **Note:** Environment-specific configurations (`.env.dev`, database passwords) are managed externally. Refer to the
-> infrastructure directory for setup details and security best practices.
->
 > **API Documentation:** For complete API endpoint documentation with request/response examples, refer to
 `bookhive-postman.json`.
