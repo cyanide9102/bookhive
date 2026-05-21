@@ -2,7 +2,10 @@ package com.cyanide9102.orderservice.order.service.impl;
 
 import com.cyanide9102.common.annotation.RequiresLogin;
 import com.cyanide9102.common.context.RequestContext;
+import com.cyanide9102.common.event.order.OrderCreatedEvent;
+import com.cyanide9102.common.event.order.SharedEventBook;
 import com.cyanide9102.common.exception.ResourceNotFoundException;
+import com.cyanide9102.common.kafka.KafkaTopics;
 import com.cyanide9102.orderservice.client.CatalogClient;
 import com.cyanide9102.orderservice.client.dto.BookResponse;
 import com.cyanide9102.orderservice.client.dto.InventoryAdjustmentRequest;
@@ -17,13 +20,16 @@ import com.cyanide9102.orderservice.order.item.dto.OrderItemRequest;
 import com.cyanide9102.orderservice.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiresLogin
 @Slf4j
@@ -37,6 +43,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+
+    private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
 
     @Transactional
     @Override
@@ -54,19 +62,27 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder().totalPrice(BigDecimal.ZERO).status(OrderStatus.CREATED).trackingId(request.getTrackingId()).items(new ArrayList<>()).build();
 
         BigDecimal total = BigDecimal.ZERO;
+        List<SharedEventBook> sharedEventBooks = new ArrayList<>();
+
+        Map<String, Short> bookQuantityMap = request.getItems().stream().collect(Collectors.toMap(OrderItemRequest::getBookId, OrderItemRequest::getQuantity));
         for (BookResponse book : books) {
-            Short quantity = request.getItems().stream().filter(item -> item.getBookId().equals(book.getId())).findFirst().map(OrderItemRequest::getQuantity).orElse((short) 1);
+            Short quantity = bookQuantityMap.getOrDefault(book.getId(), (short) 1);
             BigDecimal subTotal = book.getPrice().multiply(BigDecimal.valueOf(quantity));
             total = total.add(subTotal);
 
             OrderItem item = OrderItem.builder().order(order).bookId(book.getId()).bookTitle(book.getTitle()).quantity(quantity).price(book.getPrice()).build();
             order.getItems().add(item);
+
+            SharedEventBook sharedEventBook = SharedEventBook.builder().bookId(book.getId()).bookTitle(book.getTitle()).quantity(quantity).price(book.getPrice()).build();
+            sharedEventBooks.add(sharedEventBook);
         }
 
         order.setTotalPrice(total);
         order = orderRepository.save(order);
 
-        // TODO: Publish OrderPlaced event
+        log.info("Publishing OrderPlacedEvent for orderId={}, trackingId={}", order.getId(), order.getTrackingId());
+        OrderCreatedEvent event = OrderCreatedEvent.builder().trackingId(request.getTrackingId()).orderId(order.getId()).totalAmount(total).userId(order.getUserId()).items(sharedEventBooks).paymentToken(request.getPaymentToken()).build();
+        kafkaTemplate.send(KafkaTopics.ORDER_CREATED, order.getId(), event);
 
         return orderMapper.fromEntity(order);
     }

@@ -1,16 +1,17 @@
 package com.cyanide9102.common.event.order;
 
+import lombok.*;
+
 import java.math.BigDecimal;
 
-public record SharedEventBook(
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class SharedEventBook {
 
-        String bookId,
-
-        String bookTitle,
-
-        Short quantity,
-
-        BigDecimal price
-
-) {
+    private String bookId;
+    private String bookTitle;
+    private Short quantity;
+    private BigDecimal price;
 }
