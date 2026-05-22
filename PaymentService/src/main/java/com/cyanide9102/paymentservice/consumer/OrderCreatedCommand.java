@@ -1,4 +1,4 @@
-package com.cyanide9102.paymentservice.payment.service;
+package com.cyanide9102.paymentservice.consumer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProcessPaymentCommand {
+public class OrderCreatedCommand {
 
     private String orderId;
     private String userId;

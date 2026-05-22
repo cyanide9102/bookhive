@@ -15,4 +15,10 @@ public class CatalogFallback implements CatalogClient {
 
         throw new ServiceUnavailableException("Catalog Service is down. Unable to reserve stock!");
     }
+
+    @Override
+    public List<BookResponse> releaseStock(List<InventoryAdjustmentRequest> requests) {
+
+        throw new ServiceUnavailableException("Catalog Service is down. Unable to release stock!");
+    }
 }

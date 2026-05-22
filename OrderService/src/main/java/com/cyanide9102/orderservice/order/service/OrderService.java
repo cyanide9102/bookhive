@@ -1,5 +1,7 @@
 package com.cyanide9102.orderservice.order.service;
 
+import com.cyanide9102.orderservice.consumer.command.PaymentCompletedCommand;
+import com.cyanide9102.orderservice.consumer.command.PaymentFailedCommand;
 import com.cyanide9102.orderservice.order.dto.OrderRequest;
 import com.cyanide9102.orderservice.order.dto.OrderResponse;
 
@@ -12,4 +14,8 @@ public interface OrderService {
     OrderResponse getOrderById(String orderId);
 
     List<OrderResponse> getOrdersByUser(String userId);
+
+    void processPaymentCompleted(PaymentCompletedCommand command);
+
+    void processPaymentFailed(PaymentFailedCommand command);
 }

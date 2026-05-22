@@ -1,8 +1,8 @@
 package com.cyanide9102.paymentservice.payment.service;
 
-import com.cyanide9102.common.event.order.OrderCreatedEvent;
+import com.cyanide9102.paymentservice.consumer.OrderCreatedCommand;
 
 public interface PaymentService {
 
-    void processOrderPayment(ProcessPaymentCommand command);
+    void processOrderPayment(OrderCreatedCommand command);
 }

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SharedEventBook {
+public class SharedOrderItem {
 
     private String bookId;
     private String bookTitle;

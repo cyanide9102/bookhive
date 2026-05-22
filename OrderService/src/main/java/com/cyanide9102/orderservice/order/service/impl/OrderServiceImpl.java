@@ -1,12 +1,14 @@
 package com.cyanide9102.orderservice.order.service.impl;
 
+import com.cyanide9102.common.event.order.OrderCompletedEvent;
 import com.cyanide9102.common.event.order.OrderCreatedEvent;
-import com.cyanide9102.common.event.order.SharedEventBook;
+import com.cyanide9102.common.event.order.SharedOrderItem;
 import com.cyanide9102.common.exception.ResourceNotFoundException;
-import com.cyanide9102.common.kafka.KafkaTopics;
 import com.cyanide9102.orderservice.client.CatalogClient;
 import com.cyanide9102.orderservice.client.dto.BookResponse;
 import com.cyanide9102.orderservice.client.dto.InventoryAdjustmentRequest;
+import com.cyanide9102.orderservice.consumer.command.PaymentCompletedCommand;
+import com.cyanide9102.orderservice.consumer.command.PaymentFailedCommand;
 import com.cyanide9102.orderservice.order.Order;
 import com.cyanide9102.orderservice.order.OrderMapper;
 import com.cyanide9102.orderservice.order.OrderRepository;
@@ -16,9 +18,9 @@ import com.cyanide9102.orderservice.order.dto.OrderResponse;
 import com.cyanide9102.orderservice.order.item.OrderItem;
 import com.cyanide9102.orderservice.order.item.dto.OrderItemRequest;
 import com.cyanide9102.orderservice.order.service.OrderService;
+import com.cyanide9102.orderservice.producer.OrderEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +38,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final CatalogClient catalogClient;
 
+    private final OrderEventProducer producer;
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-
-    private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
 
     @Transactional
     @Override
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder().totalPrice(BigDecimal.ZERO).status(OrderStatus.CREATED).trackingId(request.getTrackingId()).items(new ArrayList<>()).build();
 
         BigDecimal total = BigDecimal.ZERO;
-        List<SharedEventBook> sharedEventBooks = new ArrayList<>();
+        List<SharedOrderItem> sharedOrderItems = new ArrayList<>();
 
         Map<String, Short> bookQuantityMap = request.getItems().stream().collect(Collectors.toMap(OrderItemRequest::getBookId, OrderItemRequest::getQuantity));
         for (BookResponse book : books) {
@@ -68,8 +70,8 @@ public class OrderServiceImpl implements OrderService {
             OrderItem item = OrderItem.builder().order(order).bookId(book.getId()).bookTitle(book.getTitle()).quantity(quantity).price(book.getPrice()).build();
             order.getItems().add(item);
 
-            SharedEventBook sharedEventBook = SharedEventBook.builder().bookId(book.getId()).bookTitle(book.getTitle()).quantity(quantity).price(book.getPrice()).build();
-            sharedEventBooks.add(sharedEventBook);
+            SharedOrderItem sharedOrderItem = SharedOrderItem.builder().bookId(book.getId()).bookTitle(book.getTitle()).quantity(quantity).price(book.getPrice()).build();
+            sharedOrderItems.add(sharedOrderItem);
         }
 
         order.setTotalPrice(total);
@@ -78,8 +80,8 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         log.info("Publishing OrderPlacedEvent for orderId={}, trackingId={}", order.getId(), order.getTrackingId());
-        OrderCreatedEvent event = OrderCreatedEvent.builder().trackingId(request.getTrackingId()).orderId(order.getId()).totalAmount(total).userId(order.getUserId()).items(sharedEventBooks).paymentToken(request.getPaymentToken()).build();
-        kafkaTemplate.send(KafkaTopics.ORDER_CREATED, order.getId(), event);
+        OrderCreatedEvent event = OrderCreatedEvent.builder().trackingId(request.getTrackingId()).orderId(order.getId()).totalAmount(total).userId(order.getUserId()).items(sharedOrderItems).paymentToken(request.getPaymentToken()).build();
+        producer.publishOrderCreatedEvent(event);
 
         return orderMapper.fromEntity(order);
     }
@@ -93,11 +95,49 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<OrderResponse> getOrdersByUser(String userId) {
-
 
         List<Order> orders = orderRepository.findByCreatedBy(userId);
         return orders.stream().map(orderMapper::fromEntity).toList();
+    }
+
+    @Transactional
+    @Override
+    public void processPaymentCompleted(PaymentCompletedCommand command) {
+
+        Order order = getOrder(command.getOrderId());
+        if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
+            return;
+        }
+
+        order.setStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+
+        OrderCompletedEvent event = OrderCompletedEvent.builder().paymentId(command.getPaymentId()).orderId(order.getId()).userId(order.getUserId()).trackingId(order.getTrackingId()).totalAmount(order.getTotalPrice()).items(order.getItems().stream().map(item -> new SharedOrderItem(item.getBookId(), item.getBookTitle(), item.getQuantity(), item.getPrice())).toList()).build();
+        producer.publishOrderCompletedEvent(event);
+    }
+
+    @Transactional
+    @Override
+    public void processPaymentFailed(PaymentFailedCommand command) {
+
+        Order order = getOrder(command.getOrderId());
+        if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
+            return;
+        }
+
+        if (order.getStatus() == OrderStatus.FAILED) {
+            log.info("Order already marked FAILED for Tracking ID: {}", command.getTrackingId());
+            return;
+        }
+
+        List<InventoryAdjustmentRequest> releaseRequest = order.getItems().stream().map(item -> new InventoryAdjustmentRequest(item.getBookId(), item.getQuantity())).toList();
+        catalogClient.releaseStock(releaseRequest);
+
+        order.setStatus(OrderStatus.FAILED);
+        order.setFailureMessage(command.getMessage());
+        orderRepository.save(order);
     }
 
     private Order getOrder(String id) {

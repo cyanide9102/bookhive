@@ -12,14 +12,15 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentCompletedEvent {
+public class PaymentFailedEvent {
 
-    private String paymentId;
     private String orderId;
     private String userId;
     private String trackingId;
 
     private BigDecimal totalAmount;
+
+    private String message;
 
     @Builder.Default
     private Instant occurredAt = Instant.now();

@@ -30,6 +30,9 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Column(name = "failure_message", length = 1024)
+    private String failureMessage;
+
     @Column(name = "user_id", length = 13, columnDefinition = "char(13)")
     private String userId;
 

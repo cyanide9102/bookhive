@@ -1,5 +1,6 @@
-package com.cyanide9102.common.event.payment;
+package com.cyanide9102.paymentservice.payment.dto;
 
+import com.cyanide9102.paymentservice.payment.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +13,13 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentCompletedEvent {
+public class PaymentResponse {
 
-    private String paymentId;
+    private String id;
     private String orderId;
     private String userId;
     private String trackingId;
-
-    private BigDecimal totalAmount;
-
-    @Builder.Default
-    private Instant occurredAt = Instant.now();
+    private BigDecimal amount;
+    private PaymentStatus status;
+    private Instant processedAt;
 }

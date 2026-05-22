@@ -13,4 +13,7 @@ public interface CatalogClient {
 
     @PostMapping("/api/v1/books/inventory/reserve")
     List<BookResponse> reserveStock(@RequestBody List<InventoryAdjustmentRequest> requests);
+
+    @PostMapping("/api/v1/books/inventory/release")
+    List<BookResponse> releaseStock(@RequestBody List<InventoryAdjustmentRequest> requests);
 }

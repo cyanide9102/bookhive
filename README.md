@@ -70,13 +70,13 @@ enabling decoupled payment processing.
 Start the full infrastructure stack (PostgreSQL, Kafka, all services):
 
 ```bash
-docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastructure/.env.dev up --build -d
+docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastructure/.env.local up --build -d
 ```
 
 Stop and clean all containers with volumes:
 
 ```bash
-docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastructure/.env.dev down -v
+docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastructure/.env.local down -v
 ```
 
 **Infrastructure Components:**
@@ -91,13 +91,13 @@ docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastru
 **Build the entire monorepo (from project root):**
 
 ```bash
-./mvnw clean install -DskipTests
+mvnw clean install -DskipTests
 ```
 
 **Build a specific service (from project root):**
 
 ```bash
-./mvnw clean package -pl <service-name> -am -DskipTests
+mvnw clean package -pl <service-name> -am -DskipTests
 ```
 
 ### Running Services
@@ -105,7 +105,7 @@ docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastru
 **Run a specific service (from project root):**
 
 ```bash
-./mvnw -pl <service-name> spring-boot:run
+mvnw -pl <service-name> spring-boot:run
 ```
 
 ### Testing
@@ -113,13 +113,13 @@ docker compose -f infrastructure/docker/docker-compose.yaml --env-file infrastru
 **Run unit tests for the entire project:**
 
 ```bash
-./mvnw test
+mvnw test
 ```
 
 **Run all tests including integration tests:**
 
 ```bash
-./mvnw clean test -DskipITs=false
+mvnw clean test -DskipITs=false
 ```
 
 ---
